@@ -1,0 +1,415 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* globals.css */
+/* globals.css */
+/* Custom font import */
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap');
+
+.header {
+  background: transparent;
+}
+
+.header-link {
+  text-decoration: none;
+}
+
+.search-input {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.header-link .text-black {
+  color: #000;
+}
+
+.header-link .font-kalam {
+  font-family: 'Kalam', cursive;
+}
+
+/* Animation for home icon */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.header-link .animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+.coin-details-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chart-section {
+  width: 80%;
+  margin-bottom: 2rem;
+}
+
+.range-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.range-button {
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  color: black;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.range-button.active {
+  background-color: #0070f3;
+  color: white;
+}
+
+.performance-section {
+  width: 80%;
+  margin-bottom: 2rem;
+}
+
+.performance-item {
+  margin: 0.5rem 0;
+}
+
+.description-section {
+  width: 80%;
+}
+
+.description-section img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+body {
+  background-color: #fff; /* White background */
+  color: #000; /* Black text */
+  font-family: Arial, sans-serif;
+}
+
+.trending-container {
+  padding: 20px;
+}
+
+.trending-title {
+  font-size: 2em;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  color: #000; /* Ensure table text is black */
+}
+
+.data-table th, .data-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.data-table th {
+  background-color: #f2f2f2; /* Light background for table headers */
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination-button {
+  border: 1px solid #ddd;
+  padding: 10px 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  background-color: #f2f2f2; /* Light background for pagination buttons */
+  color: #000; /* Black text for pagination buttons */
+}
+
+.pagination-button:disabled {
+  background-color: #ccc; /* Grey background for disabled buttons */
+}
+
+.pagination-button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.error-message {
+  color: red; /* Red color for error messages */
+  text-align: center;
+}
+
+.trending-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f0f4f8;
+}
+
+.trending-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #4a90e2;
+}
+
+.refresh-button {
+  background-color: #4a90e2;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.refresh-button:hover {
+  background-color: #357ab7;
+}
+
+.error-message {
+  color: #e74c3c;
+  margin-top: 1rem;
+}
+
+.trending-table {
+  width: 80%;
+  margin: 2rem 0;
+  border-collapse: collapse;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.trending-table th,
+.trending-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.trending-table th {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.trending-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.trending-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.trending-table td {
+  color: #333;
+}
+
+.trending-table td .icon {
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.text-red-500 {
+  color: red;
+}
+
+.text-green-500 {
+  color: green;
+}
+
+/* globals.css */
+.trending-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f0f4f8;
+}
+
+.trending-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #4a90e2;
+}
+
+.refresh-button {
+  background-color: #4a90e2;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.refresh-button:hover {
+  background-color: #357ab7;
+}
+
+.error-message {
+  color: #e74c3c;
+  margin-top: 1rem;
+}
+
+.trending-table {
+  width: 80%;
+  margin: 2rem 0;
+  border-collapse: collapse;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.trending-table th, .trending-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.trending-table th {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.trending-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.trending-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.trending-table td {
+  color: #333;
+}
+
+.trending-table td .icon {
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  font-family: Arial, sans-serif;
+  background-color: #f7f7f7;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Custom utility for search input */
+.search-input {
+  @apply p-2 pl-12 rounded-full bg-white text-gray-800 shadow-lg placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300;
+}
+
+/* Custom header styles */
+.header {
+  @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 shadow-lg;
+}
+
+.header-nav {
+  @apply container mx-auto flex flex-wrap justify-between items-center;
+}
+
+.header-links {
+  @apply flex items-center space-x-6 md:space-x-12;
+}
+
+.header-link {
+  @apply text-2xl font-extrabold hover:text-gray-300 transition-colors duration-300;
+}
+
+.chart-container {
+  @apply w-full md:w-3/4 lg:w-1/2;
+}
+/* Add general styles for background and fonts */
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  font-family: 'Roboto', sans-serif; /* Update to a more modern font */
+  background-color: #f7f7f7;
+}
+
+/* Style the buttons and links */
+button {
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+a {
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #d1d5db;
+}
+
+/* Add custom utility classes */
+@layer utilities {
+  .search-input {
+    @apply p-2 pl-12 rounded-full bg-white text-gray-800 shadow-lg placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300;
+  }
+  .table-header {
+    @apply bg-gradient-to-r from-green-400 to-blue-500 text-white;
+  }
+  .table-cell-positive {
+    @apply text-green-500;
+  }
+  .table-cell-negative {
+    @apply text-red-500;
+  }
+}
+
