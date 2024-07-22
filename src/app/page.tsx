@@ -5,6 +5,7 @@ import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import 'chartjs-adapter-date-fns'; // Ensure date-fns is available for date handling
 import './globals.css'; // Make sure to import your CSS file
+import Image from 'next/image'; // Import Image from next/image
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -189,7 +190,7 @@ export default function Home() {
         <>
           {coinData.bitcoin && (
             <div className="chart-container">
-              <Line data={data} />
+              <Line data={data}  />
             </div>
           )}
 
@@ -206,21 +207,28 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody>
-  {trendingCoins.map((coin, index) => {
-    const priceChange = coin.item.price_change_percentage_24h ?? 0; // Use default value if undefined
-    return (
-      <tr key={index}>
-        <td><img src={coin.item.small} alt={coin.item.name} className="coin-image" /></td>
-        <td>{coin.item.name} ({coin.item.symbol.toUpperCase()})</td>
-        <td>{coin.item.price_btc.toFixed(8)}</td>
-        <td className={priceChange >= 0 ? 'positive-change' : 'negative-change'}>
-          {priceChange.toFixed(2)}%
-        </td>
-      </tr>
-    );
-  })}
-</tbody>
-
+                  {trendingCoins.map((coin, index) => {
+                    const priceChange = coin.item.price_change_percentage_24h ?? 0; // Use default value if undefined
+                    return (
+                      <tr key={index}>
+                        <td>
+                          <Image
+                            src={coin.item.small}
+                            alt={coin.item.name}
+                            width={50} // Adjust width as needed
+                            height={50} // Adjust height as needed
+                            className="coin-image"
+                          />
+                        </td>
+                        <td>{coin.item.name} ({coin.item.symbol.toUpperCase()})</td>
+                        <td>{coin.item.price_btc.toFixed(8)}</td>
+                        <td className={priceChange >= 0 ? 'positive-change' : 'negative-change'}>
+                          {priceChange.toFixed(2)}%
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
               </table>
             ) : (
               <div>No trending coins available.</div>

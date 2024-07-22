@@ -1,5 +1,3 @@
-// pages/trending/[coinid]/details.tsx
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -128,6 +126,10 @@ const CoinDetails = () => {
     },
     scales: {
       x: {
+        type: 'time' as const,
+        time: {
+          unit: 'day' as const,
+        },
         ticks: {
           autoSkip: true,
           maxTicksLimit: 10,
@@ -137,6 +139,9 @@ const CoinDetails = () => {
         },
       },
       y: {
+        ticks: {
+          callback: (value: number) => `$${value}`,
+        },
         grid: {
           borderColor: '#ddd',
         },
@@ -197,6 +202,9 @@ const CoinDetails = () => {
         },
       },
       y: {
+        ticks: {
+          callback: (value: number) => `$${value}`,
+        },
         grid: {
           borderColor: '#ddd',
         },
@@ -219,11 +227,11 @@ const CoinDetails = () => {
       </div>
       <div className="coin-description">
         <h2>Description</h2>
-        <p>{coinDetails.description.en}</p>
+        <p>{coinDetails.description.en.replace(/'/g, '&apos;')}</p>
       </div>
       <div className="coin-chart">
         <h2>{selectedRange.toUpperCase()} Price Chart</h2>
-        <Line data={chartData} options={chartOptions} />
+        <Line data={chartData}  />
       </div>
       <div className="chart-controls">
         {Object.keys(timeRanges).map((range) => (
@@ -240,8 +248,8 @@ const CoinDetails = () => {
         <h2>Performance</h2>
         <Line data={performanceData}  />
         <div className="performance-metrics">
-          <p>Today's Low: ${coinDetails.market_data.low_24h?.usd?.toFixed(2)}</p>
-          <p>Today's High: ${coinDetails.market_data.high_24h?.usd?.toFixed(2)}</p>
+          {/* <p>Today's Low: ${coinDetails.market_data.low_24h?.usd?.toFixed(2)}</p>
+          <p>Today's High: ${coinDetails.market_data.high_24h?.usd?.toFixed(2)}</p> */}
           <p>52W Low: ${coinDetails.market_data.low_52w?.usd?.toFixed(2)}</p>
           <p>52W High: ${coinDetails.market_data.high_52w?.usd?.toFixed(2)}</p>
         </div>
@@ -292,20 +300,19 @@ const CoinDetails = () => {
           color: #fff;
         }
         .performance-section {
-          margin-top: 40px;
-          text-align: center;
-        }
-        .performance-metrics {
           margin-top: 20px;
         }
         .performance-metrics p {
-          font-size: 18px;
           margin: 5px 0;
         }
-        .error, .loading {
+        .error {
+          color: red;
           text-align: center;
           font-size: 18px;
-          margin-top: 20px;
+        }
+        .loading {
+          text-align: center;
+          font-size: 18px;
         }
       `}</style>
     </div>

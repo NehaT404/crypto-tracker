@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Pagination from '../../../components/Pagination';
 import Table from '../../../components/Table';
+import Image from 'next/image'; // Import the Image component
 import '../globals.css';
 import { CoinData } from '../../../types';
 
