@@ -6,12 +6,12 @@ interface PriceChangePercentages {
   [key: string]: number;
 }
 
-export type DataKey = 
-  | 'price_change_percentage_24h' 
-  | 'price_change_percentage_7d' 
-  | 'price_change_percentage_30d' 
-  | 'price_change_percentage_1y' 
-  | 'price_change_percentage_2y';
+// export type DataKey = 
+//   | 'price_change_percentage_24h' 
+//   | 'price_change_percentage_7d' 
+//   | 'price_change_percentage_30d' 
+//   | 'price_change_percentage_1y' 
+//   | 'price_change_percentage_2y';
 
 export interface CoinData {
   id: string;
