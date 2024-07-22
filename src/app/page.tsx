@@ -1,9 +1,9 @@
-
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import Image from 'next/image';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -84,9 +84,9 @@ export default function Home() {
     }
   };
 
-  const fetchData = async (period: string) => {
+  const fetchData = useCallback(async (period: string) => {
     setError(null);
-    const days = timePeriods["5D"];
+    const days =  timePeriods['1D'];
     const dataPromises = coinIds.map(coin => fetchCoinData(coin, days));
     const results = await Promise.all(dataPromises);
     const data: { [key: string]: CoinData } = {};
@@ -96,11 +96,11 @@ export default function Home() {
       }
     });
     setCoinData(data);
-  };
+  }, []);
 
   useEffect(() => {
     fetchData(selectedPeriod);
-  }, [selectedPeriod]);
+  }, [fetchData, selectedPeriod]);
 
   useEffect(() => {
     fetchTrendingCoins();
@@ -173,7 +173,7 @@ export default function Home() {
 
       {coinData.bitcoin && (
         <div className="chart-container w-full max-w-4xl mb-8">
-          <Line data={data} />
+          <Line data={data}/>
         </div>
       )}
       <h2 className="text-2xl font-bold mb-4">Trending Coins</h2>
@@ -184,7 +184,7 @@ export default function Home() {
               const priceChange = coin.item.price_change_percentage_24h;
               return (
                 <div key={index} className="flex items-center p-4 bg-white rounded shadow">
-                  <img src={coin.item.small} alt={coin.item.name} className="w-10 h-10 mr-4" />
+                  <Image src={coin.item.small} alt={coin.item.name} width={40} height={40} className="mr-4" />
                   <div>
                     <p className="text-lg font-bold">{coin.item.name} ({coin.item.symbol.toUpperCase()})</p>
                     <p className="text-sm">Price (BTC): {coin.item.price_btc.toFixed(8)}</p>

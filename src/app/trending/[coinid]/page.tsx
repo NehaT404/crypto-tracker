@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { Chart, registerables } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import Image from 'next/image';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -59,44 +60,36 @@ const CoinDetails = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedRange, setSelectedRange] = useState<TimeRange>('1y');
 
-  useEffect(() => {
-    if (coinid) {
-      const fetchCoinDetails = async () => {
-        try {
-          const response = await fetch(`https://api.coingecko.com/api/v3/coins/${coinid}`);
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          const data: CoinDescriptionProps = await response.json();
-          setCoinDetails(data);
-          setError(null);
-        } catch (error) {
-          setError((error as Error).message);
-        }
-      };
+  const fetchData = useCallback(async () => {
+    if (!coinid) return;
 
-      const fetchHistoricalData = async () => {
-        try {
-          const days = timeRanges[selectedRange];
-          const response = await fetch(`https://api.coingecko.com/api/v3/coins/${coinid}/market_chart?vs_currency=usd&days=${days}`);
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          const data: HistoricalPrice = await response.json();
-          setHistoricalData(data);
-          setError(null);
-        } catch (error) {
-          setError((error as Error).message);
-        }
-      };
+    try {
+      const [detailsResponse, historicalResponse] = await Promise.all([
+        fetch(`https://api.coingecko.com/api/v3/coins/${coinid}`),
+        fetch(`https://api.coingecko.com/api/v3/coins/${coinid}/market_chart?vs_currency=usd&days=${timeRanges[selectedRange]}`)
+      ]);
 
-      fetchCoinDetails();
-      fetchHistoricalData();
+      if (!detailsResponse.ok || !historicalResponse.ok) {
+        throw new Error('Failed to fetch data');
+      }
+
+      const detailsData: CoinDescriptionProps = await detailsResponse.json();
+      const historicalData: HistoricalPrice = await historicalResponse.json();
+
+      setCoinDetails(detailsData);
+      setHistoricalData(historicalData);
+      setError(null);
+    } catch (error) {
+      setError((error as Error).message);
     }
   }, [coinid, selectedRange]);
 
-  if (error) return <div>Error: {error}</div>;
-  if (!coinDetails || !historicalData) return <div>Loading...</div>;
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  if (error) return <div className="error">Error: {error}</div>;
+  if (!coinDetails || !historicalData) return <div className="loading">Loading...</div>;
 
   // Prepare chart data
   const chartLabels = historicalData.prices.map(([timestamp]) => new Date(timestamp).toLocaleDateString());
@@ -108,13 +101,13 @@ const CoinDetails = () => {
       {
         label: 'Price in USD',
         data: chartPrices,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)', // Light red background
-        borderColor: 'rgba(255, 99, 132, 1)', // Red line
-        borderWidth: 2, // Thickness of the line
-        pointBackgroundColor: 'rgba(255, 99, 132, 1)', // Red points
-        pointBorderColor: '#fff', // White border for points
-        pointBorderWidth: 2, // Width of point borders
-        pointRadius: 3, // Radius of points
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 2,
+        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 3,
       },
     ],
   };
@@ -127,9 +120,7 @@ const CoinDetails = () => {
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => {
-            return `${context.dataset.label}: $${context.raw}`;
-          },
+          label: (context: any) => `${context.dataset.label}: $${context.raw}`,
         },
       },
     },
@@ -140,12 +131,12 @@ const CoinDetails = () => {
           maxTicksLimit: 10,
         },
         grid: {
-          display: false, // Hide grid lines
+          display: false,
         },
       },
       y: {
         grid: {
-          borderColor: '#ddd', // Light gray grid lines
+          borderColor: '#ddd',
         },
       },
     },
@@ -172,8 +163,8 @@ const CoinDetails = () => {
           high_52w?.usd ?? 0,
           low_52w?.usd ?? 0,
         ],
-        backgroundColor: 'rgba(75, 192, 192, 0.2)', // Light green background
-        borderColor: 'rgba(75, 192, 192, 1)', // Green line
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 2,
         pointBackgroundColor: 'rgba(75, 192, 192, 1)',
         pointBorderColor: '#fff',
@@ -193,9 +184,7 @@ const CoinDetails = () => {
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => {
-            return `${context.dataset.label}: $${context.raw}`;
-          },
+          label: (context: any) => `${context.dataset.label}: $${context.raw}`,
         },
       },
     },
@@ -214,9 +203,15 @@ const CoinDetails = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <div className="coin-header">
-        <img src={coinDetails.image.large} alt={coinDetails.name} className="coin-image" />
+        <Image
+          src={coinDetails.image.large}
+          alt={coinDetails.name}
+          width={100}
+          height={100}
+          className="coin-image"
+        />
         <h1>{coinDetails.name}</h1>
         <p>Current Price: ${coinDetails.market_data.current_price.usd?.toFixed(2)}</p>
       </div>
@@ -226,7 +221,7 @@ const CoinDetails = () => {
       </div>
       <div className="coin-chart">
         <h2>{selectedRange.toUpperCase()} Price Chart</h2>
-        <Line data={chartData}  />
+        <Line data={chartData} />
       </div>
       <div className="chart-controls">
         {Object.keys(timeRanges).map((range) => (
@@ -241,15 +236,20 @@ const CoinDetails = () => {
       </div>
       <div className="performance-section">
         <h2>Performance</h2>
-        <Line data={performanceData}  />
+        <Line data={performanceData} />
         <div className="performance-metrics">
-          <p>Today's Low: ${coinDetails.market_data.low_24h?.usd?.toFixed(2)}</p>
-          <p>Today's High: ${coinDetails.market_data.high_24h?.usd?.toFixed(2)}</p>
+          <p>Today&apos;s Low: ${coinDetails.market_data.low_24h?.usd?.toFixed(2)}</p>
+          <p>Today&apos;s High: ${coinDetails.market_data.high_24h?.usd?.toFixed(2)}</p>
           <p>52W Low: ${coinDetails.market_data.low_52w?.usd?.toFixed(2)}</p>
           <p>52W High: ${coinDetails.market_data.high_52w?.usd?.toFixed(2)}</p>
         </div>
       </div>
       <style jsx>{`
+        .container {
+          padding: 20px;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
         .coin-header {
           text-align: center;
           margin-bottom: 20px;
@@ -299,6 +299,11 @@ const CoinDetails = () => {
         .performance-metrics p {
           font-size: 18px;
           margin: 5px 0;
+        }
+        .error, .loading {
+          text-align: center;
+          font-size: 18px;
+          margin-top: 20px;
         }
       `}</style>
     </div>
