@@ -3,7 +3,6 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { CoinData } from '../types';
 
 interface TableProps {
@@ -32,18 +31,63 @@ const Table: React.FC<TableProps> = ({ data, currentPage, itemsPerPage }) => {
       <tbody>
         {selectedData.length > 0 ? (
           selectedData.map((item) => (
-            <tr key={item.id} style={{ cursor: 'pointer' }}>
+            <tr key={item.id}>
               <td>
-                <Link href={`/trending/${item.id}`}>
+                <button 
+                  onClick={() => window.location.href = `/trending/${item.id}`} 
+                  className="data-row-button"
+                >
                   {item.id}
-                </Link>
+                </button>
               </td>
-              <td>{item.symbol}</td>
-              <td>{item.name}</td>
-              <td>${item.current_price.toFixed(2)}</td>
-              <td>${item.market_cap.toLocaleString()}</td>
-              <td>${item.total_volume.toLocaleString()}</td>
-              <td>{item.price_change_percentage_24h.toFixed(2)}%</td>
+              <td>
+                <button 
+                  onClick={() => window.location.href = `/trending/${item.id}`} 
+                  className="data-row-button"
+                >
+                  {item.symbol}
+                </button>
+              </td>
+              <td>
+                <button 
+                  onClick={() => window.location.href = `/trending/${item.id}`} 
+                  className="data-row-button"
+                >
+                  {item.name}
+                </button>
+              </td>
+              <td>
+                <button 
+                  onClick={() => window.location.href = `/trending/${item.id}`} 
+                  className="data-row-button"
+                >
+                  ${item.current_price.toFixed(2)}
+                </button>
+              </td>
+              <td>
+                <button 
+                  onClick={() => window.location.href = `/trending/${item.id}`} 
+                  className="data-row-button"
+                >
+                  ${item.market_cap.toLocaleString()}
+                </button>
+              </td>
+              <td>
+                <button 
+                  onClick={() => window.location.href = `/trending/${item.id}`} 
+                  className="data-row-button"
+                >
+                  ${item.total_volume.toLocaleString()}
+                </button>
+              </td>
+              <td>
+                <button 
+                  onClick={() => window.location.href = `/trending/${item.id}`} 
+                  className="data-row-button"
+                >
+                  {item.price_change_percentage_24h.toFixed(2)}%
+                </button>
+              </td>
             </tr>
           ))
         ) : (
@@ -52,6 +96,51 @@ const Table: React.FC<TableProps> = ({ data, currentPage, itemsPerPage }) => {
           </tr>
         )}
       </tbody>
+      <style jsx>{`
+        .data-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-family: Arial, sans-serif;
+        }
+        .data-table th,
+        .data-table td {
+          padding: 12px;
+          border: 1px solid #ddd;
+          text-align: left;
+        }
+        .data-table th {
+          background-color: #f4f4f4;
+          font-weight: bold;
+        }
+        .data-row-button {
+          background: #f9f9f9;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          width: 100%;
+          text-align: left;
+          cursor: pointer;
+          padding: 10px;
+          margin: 0;
+          color: #333;
+          font: 16px Arial, sans-serif;
+          transition: background 0.3s, border 0.3s, color 0.3s;
+          text-decoration: none;
+        }
+        .data-row-button:hover {
+          background-color: #e0e0e0;
+          border-color: #bbb;
+        }
+        .data-row-button:focus {
+          outline: none;
+          box-shadow: 0 0 0 2px rgba(0, 0, 255, 0.5);
+        }
+        .data-row-button:active {
+          background-color: #d0d0d0;
+        }
+        tr {
+          cursor: pointer;
+        }
+      `}</style>
     </table>
   );
 };
