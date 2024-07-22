@@ -1,22 +1,16 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import Image from 'next/image';
+import 'chartjs-adapter-date-fns'; // Ensure date-fns is available for date handling
+import './globals.css'; // Make sure to import your CSS file
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const timePeriods = {
-  '1D': '1',
-  '5D': '5',
-  '1M': '30',
-  '6M': '180',
-  '1Y': '365',
-  '5Y': '1825'
-};
-
 const coinIds = ['bitcoin', 'ethereum', 'solana'];
+const contractAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'; // Example contract address
+const apiKey = 'CG-aYfjnMwJEysXQvrWyeHrmXHB'; // Replace with your actual API key
 
 interface CoinData {
   prices: [number, number][];
@@ -37,57 +31,55 @@ interface TrendingCoin {
   };
 }
 
+const fetchCoinData = async (coin: string) => {
+  const url = `https://api.coingecko.com/api/v3/coins/${coin}/contract/${contractAddress}/market_chart/range?vs_currency=usd&from=1711929600&to=1712275200&precision=4`;
+  const options = {
+    method: 'GET',
+    headers: { accept: 'application/json', 'x-cg-demo-api-key': apiKey }, // Replace with actual API key
+  };
+
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return null;
+  }
+};
+
+const fetchTrendingCoins = async () => {
+  const url = 'https://api.coingecko.com/api/v3/search/trending';
+  const options = {
+    method: 'GET',
+    headers: { accept: 'application/json' }, // Remove API key if not needed
+  };
+
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const result = await response.json();
+    console.log('Trending coins data:', result); // Debugging information
+    return result.coins || [];
+  } catch (error) {
+    console.error('Error fetching trending coins:', error);
+    return [];
+  }
+};
+
 export default function Home() {
-  const [selectedPeriod, setSelectedPeriod] = useState('5D');  // Set default to 5 days
   const [coinData, setCoinData] = useState<{ [key: string]: CoinData }>({});
-  const [error, setError] = useState<string | null>(null);
   const [trendingCoins, setTrendingCoins] = useState<TrendingCoin[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const fetchCoinData = async (coin: string, days: string) => {
-    const url = `https://api.coingecko.com/api/v3/coins/${coin}/market_chart?vs_currency=usd&days=${days}`;
-    const options = {
-      method: 'GET',
-      headers: { accept: 'application/json' },
-    };
-
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setError((error as Error).message);
-      return null;
-    }
-  };
-
-  const fetchTrendingCoins = async () => {
-    const url = 'https://api.coingecko.com/api/v3/search/trending';
-    const options = {
-      method: 'GET',
-      headers: { accept: 'application/json', 'x-cg-pro-api-key': 'CG-aYfjnMwJEysXQvrWyeHrmXHB' },
-    };
-
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const result = await response.json();
-      setTrendingCoins(result.coins || []); // Ensure coins are set
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setError((error as Error).message);
-    }
-  };
-
-  const fetchData = useCallback(async (period: string) => {
-    setError(null);
-    const days =  timePeriods['1D'];
-    const dataPromises = coinIds.map(coin => fetchCoinData(coin, days));
+  const fetchData = async () => {
+    setLoading(true);
+    const dataPromises = coinIds.map(coin => fetchCoinData(coin));
     const results = await Promise.all(dataPromises);
     const data: { [key: string]: CoinData } = {};
     results.forEach((result, index) => {
@@ -96,23 +88,17 @@ export default function Home() {
       }
     });
     setCoinData(data);
-  }, []);
-
-  useEffect(() => {
-    fetchData(selectedPeriod);
-  }, [fetchData, selectedPeriod]);
-
-  useEffect(() => {
-    fetchTrendingCoins();
-  }, []);
-
-  const handlePeriodChange = (period: string) => {
-    setSelectedPeriod(period);
-    fetchData(period);
+    const coins = await fetchTrendingCoins();
+    setTrendingCoins(coins);
+    setLoading(false);
   };
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const data = {
-    labels: coinData.bitcoin ? coinData.bitcoin.prices.map(price => new Date(price[0]).toLocaleDateString()) : [],
+    labels: coinData.bitcoin ? coinData.bitcoin.prices.map(price => new Date(price[0]).toLocaleTimeString()) : [],
     datasets: coinIds.map(coin => ({
       label: coin.charAt(0).toUpperCase() + coin.slice(1),
       data: coinData[coin] ? coinData[coin].prices.map(price => price[1]) : [],
@@ -121,7 +107,7 @@ export default function Home() {
                     coin === 'ethereum' ? 'rgba(54, 162, 235, 1)' : 'rgba(255, 206, 86, 1)',
       backgroundColor: coin === 'bitcoin' ? 'rgba(255, 0, 0, 0.2)' :
                         coin === 'ethereum' ? 'rgba(54, 162, 235, 0.2)' : 'rgba(255, 206, 86, 0.2)',
-      borderWidth: 2,
+      borderWidth: 3,
       tension: 0.4,
       pointStyle: 'rect',
       pointRadius: 5,
@@ -151,55 +137,97 @@ export default function Home() {
         grid: {
           display: false,
         },
+        ticks: {
+          autoSkip: true,
+          maxTicksLimit: 10,
+        },
       },
       y: {
         grid: {
           display: true,
           color: 'rgba(200, 200, 200, 0.2)',
         },
+        ticks: {
+          callback: (value: number) => `${value}`,
+        },
       },
     },
     elements: {
+      line: {
+        borderColor: 'rgba(0,0,0,0.2)',
+        borderWidth: 3,
+        borderDash: [5, 5],
+        borderCapStyle: 'round',
+        borderJoinStyle: 'round',
+        shadowColor: 'rgba(0, 0, 0, 0.5)',
+        shadowBlur: 8,
+        shadowOffsetX: 4,
+        shadowOffsetY: 4,
+        tension: 0.4,
+      },
       point: {
         radius: 5,
         pointStyle: 'rect',
+        backgroundColor: '#fff',
+        borderColor: '#000',
+        borderWidth: 2,
+        shadowColor: 'rgba(0, 0, 0, 0.5)',
+        shadowBlur: 5,
+        shadowOffsetX: 2,
+        shadowOffsetY: 2,
       },
     },
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-4" style={{ color: '#000000' }}>Global Cryptocurrency Market Data</h1>
+    <div className="container">
+      <h1 className="heading">Global Cryptocurrency Market Data</h1>
 
-      {coinData.bitcoin && (
-        <div className="chart-container w-full max-w-4xl mb-8">
-          <Line data={data}/>
-        </div>
-      )}
-      <h2 className="text-2xl font-bold mb-4">Trending Coins</h2>
-      <div className="w-full max-w-4xl">
-        {trendingCoins.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {trendingCoins.map((coin, index) => {
-              const priceChange = coin.item.price_change_percentage_24h;
-              return (
-                <div key={index} className="flex items-center p-4 bg-white rounded shadow">
-                  <Image src={coin.item.small} alt={coin.item.name} width={40} height={40} className="mr-4" />
-                  <div>
-                    <p className="text-lg font-bold">{coin.item.name} ({coin.item.symbol.toUpperCase()})</p>
-                    <p className="text-sm">Price (BTC): {coin.item.price_btc.toFixed(8)}</p>
-                    <p className={`text-sm ${priceChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                      24h Change: {priceChange ? priceChange.toFixed(2) : 'N/A'}%
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+      {loading ? (
+        <div className="loading">Loading...</div>
+      ) : (
+        <>
+          {coinData.bitcoin && (
+            <div className="chart-container">
+              <Line data={data} />
+            </div>
+          )}
+
+          <h2 className="heading">Trending Coins</h2>
+          <div className="table-container">
+            {trendingCoins.length > 0 ? (
+              <table className="trending-table">
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Price (BTC)</th>
+                    <th>24h Change</th>
+                  </tr>
+                </thead>
+                <tbody>
+  {trendingCoins.map((coin, index) => {
+    const priceChange = coin.item.price_change_percentage_24h ?? 0; // Use default value if undefined
+    return (
+      <tr key={index}>
+        <td><img src={coin.item.small} alt={coin.item.name} className="coin-image" /></td>
+        <td>{coin.item.name} ({coin.item.symbol.toUpperCase()})</td>
+        <td>{coin.item.price_btc.toFixed(8)}</td>
+        <td className={priceChange >= 0 ? 'positive-change' : 'negative-change'}>
+          {priceChange.toFixed(2)}%
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
+              </table>
+            ) : (
+              <div>No trending coins available.</div>
+            )}
           </div>
-        ) : (
-          <p>No trending coins available.</p>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }

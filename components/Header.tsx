@@ -8,14 +8,14 @@ const Header = () => {
           <Link href="/" className="header-link">Home</Link>
           <Link href="/trending" className="header-link">Explore</Link>
         </div>
-        <div className="relative flex-grow max-w-xs">
+        <div className="relative flex-grow">
           <input
             type="text"
             placeholder="Search..."
             className="search-input"
           />
           <svg
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            className="search-icon"
             width="20"
             height="20"
             fill="currentColor"

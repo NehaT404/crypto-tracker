@@ -1,3 +1,5 @@
+// pages/trending/[coinid]/details.tsx
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -221,7 +223,7 @@ const CoinDetails = () => {
       </div>
       <div className="coin-chart">
         <h2>{selectedRange.toUpperCase()} Price Chart</h2>
-        <Line data={chartData} />
+        <Line data={chartData} options={chartOptions} />
       </div>
       <div className="chart-controls">
         {Object.keys(timeRanges).map((range) => (
@@ -236,10 +238,10 @@ const CoinDetails = () => {
       </div>
       <div className="performance-section">
         <h2>Performance</h2>
-        <Line data={performanceData} />
+        <Line data={performanceData}  />
         <div className="performance-metrics">
-          <p>Today&apos;s Low: ${coinDetails.market_data.low_24h?.usd?.toFixed(2)}</p>
-          <p>Today&apos;s High: ${coinDetails.market_data.high_24h?.usd?.toFixed(2)}</p>
+          <p>Today's Low: ${coinDetails.market_data.low_24h?.usd?.toFixed(2)}</p>
+          <p>Today's High: ${coinDetails.market_data.high_24h?.usd?.toFixed(2)}</p>
           <p>52W Low: ${coinDetails.market_data.low_52w?.usd?.toFixed(2)}</p>
           <p>52W High: ${coinDetails.market_data.high_52w?.usd?.toFixed(2)}</p>
         </div>

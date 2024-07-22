@@ -5,6 +5,17 @@ import React from 'react';
 interface PriceChangePercentages {
   [key: string]: number;
 }
+ // src/types/index.ts
+export interface CoinData {
+  id: string;
+  name: string;
+  symbol: string;
+  current_price: number;
+  market_cap: number;
+  total_volume: number;
+  price_change_percentage_24h: number;
+  // Add other relevant fields
+}
 
 // export type DataKey = 
 //   | 'price_change_percentage_24h' 
